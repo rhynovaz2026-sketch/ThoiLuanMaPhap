@@ -1,0 +1,1401 @@
+<!DOCTYPE html>
+<html lang="vi" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GRIMOIRE OF TIME — THỜI LUÂN VẠN TƯỢNG</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Cinzel & Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        chrono: {
+                            gold: '#dfb15b',
+                            goldLight: '#fce8a6',
+                            bronze: '#b8860b',
+                            darkBg: '#090d16',
+                            cardBg: 'rgba(15, 23, 42, 0.75)',
+                            cyan: '#38bdf8',
+                            purple: '#a855f7',
+                            red: '#f43f5e',
+                            green: '#10b981'
+                        }
+                    },
+                    fontFamily: {
+                        cinzel: ['Cinzel', 'serif'],
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    animation: {
+                        'spin-slow': 'spin 40s linear infinite',
+                        'spin-reverse-slow': 'spin-reverse 50s linear infinite',
+                        'pulse-glow': 'pulseGlow 3s ease-in-out infinite',
+                        'float': 'float 6s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        'spin-reverse': {
+                            '0%': { transform: 'rotate(0deg)' },
+                            '100%': { transform: 'rotate(-360deg)' },
+                        },
+                        pulseGlow: {
+                            '0%, 100%': { opacity: 0.4, filter: 'drop-shadow(0 0 15px rgba(223, 177, 91, 0.4))' },
+                            '50%': { opacity: 0.8, filter: 'drop-shadow(0 0 30px rgba(223, 177, 91, 0.8))' }
+                        },
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0px)' },
+                            '50%': { transform: 'translateY(-8px)' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #090d16;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #2a374e;
+            border-radius: 4px;
+            border: 1px solid #dfb15b40;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #dfb15b;
+        }
+
+        /* Glassmorphism */
+        .glass-panel {
+            background: rgba(13, 20, 36, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(223, 177, 91, 0.2);
+        }
+
+        .glass-card {
+            background: rgba(18, 28, 48, 0.65);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(223, 177, 91, 0.15);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .glass-card:hover {
+            border-color: rgba(223, 177, 91, 0.6);
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px -5px rgba(223, 177, 91, 0.15), 0 0 15px rgba(56, 189, 248, 0.1);
+        }
+
+        /* Time Circle Magic Canvas Styling */
+        #chrono-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.35;
+        }
+
+        /* Rank Colors */
+        .rank-D { border-left: 4px solid #9ca3af; }
+        .rank-C { border-left: 4px solid #38bdf8; }
+        .rank-B { border-left: 4px solid #a855f7; }
+        .rank-A { border-left: 4px solid #f59e0b; }
+        .rank-S { border-left: 4px solid #f43f5e; box-shadow: inset 0 0 15px rgba(244, 63, 94, 0.1); }
+
+        .badge-D { background: rgba(156, 163, 175, 0.15); color: #e5e7eb; border: 1px solid rgba(156, 163, 175, 0.3); }
+        .badge-C { background: rgba(56, 189, 248, 0.15); color: #7dd3fc; border: 1px solid rgba(56, 189, 248, 0.3); }
+        .badge-B { background: rgba(168, 85, 247, 0.15); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.3); }
+        .badge-A { background: rgba(245, 158, 11, 0.15); color: #fcd34d; border: 1px solid rgba(245, 158, 11, 0.3); }
+        .badge-S { background: rgba(244, 63, 94, 0.2); color: #fda4af; border: 1px solid rgba(244, 63, 94, 0.4); }
+
+        /* Gold Gradient Text */
+        .gold-gradient-text {
+            background: linear-gradient(135deg, #fff2c5 0%, #dfb15b 50%, #996515 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Pulse Animation on Activation */
+        @keyframes spellCast {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.03); filter: brightness(1.3) drop-shadow(0 0 20px rgba(223, 177, 91, 0.8)); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .spell-activating {
+            animation: spellCast 0.6s ease-out;
+        }
+    </style>
+</head>
+<body class="bg-chrono-darkBg text-slate-200 font-sans min-h-screen relative overflow-x-hidden selection:bg-chrono-gold selection:text-black">
+
+    <!-- CANVAS HIỆU ỨNG THỜI GIAN NỀN -->
+    <canvas id="chrono-canvas"></canvas>
+
+    <!-- WRAPPER CHÍNH -->
+    <div class="relative z-10 flex flex-col min-h-screen">
+
+        <!-- HEADER BANNER -->
+        <header class="glass-panel border-b border-chrono-gold/30 sticky top-0 z-30 px-4 py-3 md:px-8 shadow-2xl">
+            <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+                
+                <!-- Title & Logo -->
+                <div class="flex items-center gap-3 cursor-pointer" onclick="resetFilters()">
+                    <div class="relative flex items-center justify-center w-12 h-12 rounded-full border border-chrono-gold/50 bg-chrono-darkBg/80 shadow-[0_0_15px_rgba(223,177,91,0.3)]">
+                        <i data-lucide="hourglass" class="w-6 h-6 text-chrono-gold animate-pulse"></i>
+                        <div class="absolute inset-0 rounded-full border border-dashed border-chrono-gold/30 animate-spin-slow"></div>
+                    </div>
+                    <div>
+                        <h1 class="font-cinzel text-xl md:text-2xl font-black tracking-widest gold-gradient-text drop-shadow">
+                            GRIMOIRE OF TIME
+                        </h1>
+                        <p class="text-xs text-chrono-gold/80 font-cinzel tracking-wider uppercase font-semibold">
+                            Thời Luân Vạn Tượng — 25 Chiêu Thức Ma Pháp
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Navigation Controls -->
+                <div class="flex items-center gap-2 md:gap-4 flex-wrap justify-center">
+                    <button onclick="toggleCompareMode()" id="compare-toggle-btn" class="px-3 py-1.5 rounded-lg border border-chrono-gold/40 bg-chrono-darkBg/60 hover:bg-chrono-gold/20 text-xs font-semibold flex items-center gap-1.5 transition text-chrono-goldLight">
+                        <i data-lucide="git-compare" class="w-4 h-4"></i>
+                        <span>So Sánh (<span id="compare-count">0</span>/2)</span>
+                    </button>
+
+                    <button onclick="toggleFavoritesOnly()" id="fav-toggle-btn" class="px-3 py-1.5 rounded-lg border border-rose-500/40 bg-chrono-darkBg/60 hover:bg-rose-500/20 text-xs font-semibold flex items-center gap-1.5 transition text-rose-300">
+                        <i data-lucide="bookmark" class="w-4 h-4"></i>
+                        <span>Yêu Thích (<span id="fav-count">0</span>)</span>
+                    </button>
+
+                    <button onclick="triggerGlobalTimeDilation()" class="px-3 py-1.5 rounded-lg border border-cyan-400/50 bg-cyan-950/40 hover:bg-cyan-500/30 text-xs font-semibold flex items-center gap-1.5 transition text-cyan-300 shadow-[0_0_10px_rgba(56,189,248,0.2)]">
+                        <i data-lucide="zap" class="w-4 h-4 text-cyan-400"></i>
+                        <span class="hidden sm:inline">Kích Hoạt</span> Thời Vực
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- MAIN CONTENT AREA -->
+        <main class="flex-grow max-w-7xl w-full mx-auto px-4 py-6 md:px-8 flex flex-col gap-6">
+
+            <!-- THỐNG KÊ QUAN TRỌNG & THÔNG TIN DÒNG THỜI GIAN -->
+            <section class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
+                <div onclick="filterByRank('ALL')" class="glass-panel p-3 rounded-xl border border-chrono-gold/20 flex flex-col items-center justify-center cursor-pointer hover:border-chrono-gold/60 transition group">
+                    <span class="text-xs uppercase font-cinzel text-slate-400 group-hover:text-chrono-gold">Tổng Chiêu</span>
+                    <span class="text-xl md:text-2xl font-bold font-cinzel text-chrono-goldLight">25</span>
+                </div>
+                <div onclick="filterByRank('D')" class="glass-panel p-3 rounded-xl border border-slate-500/30 flex flex-col items-center justify-center cursor-pointer hover:border-slate-400 transition group">
+                    <span class="text-xs uppercase font-cinzel text-slate-400 group-hover:text-slate-200">Cấp D (Khởi Nguyên)</span>
+                    <span class="text-xl font-bold font-cinzel text-slate-300">5</span>
+                </div>
+                <div onclick="filterByRank('C')" class="glass-panel p-3 rounded-xl border border-sky-500/30 flex flex-col items-center justify-center cursor-pointer hover:border-sky-400 transition group">
+                    <span class="text-xs uppercase font-cinzel text-sky-400/80 group-hover:text-sky-300">Cấp C (Điều Khiển)</span>
+                    <span class="text-xl font-bold font-cinzel text-sky-400">5</span>
+                </div>
+                <div onclick="filterByRank('B')" class="glass-panel p-3 rounded-xl border border-purple-500/30 flex flex-col items-center justify-center cursor-pointer hover:border-purple-400 transition group">
+                    <span class="text-xs uppercase font-cinzel text-purple-400/80 group-hover:text-purple-300">Cấp B (Bá Chủ)</span>
+                    <span class="text-xl font-bold font-cinzel text-purple-400">5</span>
+                </div>
+                <div onclick="filterByRank('A')" class="glass-panel p-3 rounded-xl border border-amber-500/30 flex flex-col items-center justify-center cursor-pointer hover:border-amber-400 transition group">
+                    <span class="text-xs uppercase font-cinzel text-amber-400/80 group-hover:text-amber-300">Cấp A (Chủ Nhân)</span>
+                    <span class="text-xl font-bold font-cinzel text-amber-400">5</span>
+                </div>
+                <div onclick="filterByRank('S')" class="glass-panel p-3 rounded-xl border border-rose-500/40 bg-rose-950/10 flex flex-col items-center justify-center cursor-pointer hover:border-rose-400 transition group">
+                    <span class="text-xs uppercase font-cinzel text-rose-400/90 group-hover:text-rose-300">Cấp S (Tối Thượng)</span>
+                    <span class="text-xl font-bold font-cinzel text-rose-400">5</span>
+                </div>
+            </section>
+
+            <!-- BỘ LỌC TÌM KIẾM TƯƠNG TÁC -->
+            <section class="glass-panel p-4 md:p-5 rounded-2xl flex flex-col md:flex-row gap-4 justify-between items-center">
+                <!-- Search Input -->
+                <div class="relative w-full md:w-96">
+                    <i data-lucide="search" class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-chrono-gold/60"></i>
+                    <input type="text" id="search-input" oninput="handleSearch()" placeholder="Tìm tên chiêu, mô tả, từ khóa..." 
+                        class="w-full pl-10 pr-4 py-2 rounded-xl bg-chrono-darkBg/90 border border-chrono-gold/30 focus:border-chrono-gold focus:outline-none text-sm text-slate-100 placeholder-slate-500 transition">
+                </div>
+
+                <!-- Filter Controls -->
+                <div class="flex flex-wrap items-center gap-2 w-full md:w-auto justify-start md:justify-end">
+                    <!-- Rank Filter Dropdown -->
+                    <select id="rank-select" onchange="applyFilters()" class="px-3 py-2 rounded-xl bg-chrono-darkBg/90 border border-chrono-gold/30 text-xs text-chrono-goldLight focus:outline-none focus:border-chrono-gold">
+                        <option value="ALL">Tất cả Cấp Độ</option>
+                        <option value="D">Cấp D — Khởi Nguyên</option>
+                        <option value="C">Cấp C — Điều Khiển</option>
+                        <option value="B">Cấp B — Bá Chủ</option>
+                        <option value="A">Cấp A — Chủ Nhân</option>
+                        <option value="S">Cấp S — Tối Thượng</option>
+                    </select>
+
+                    <!-- Type Filter Dropdown -->
+                    <select id="type-select" onchange="applyFilters()" class="px-3 py-2 rounded-xl bg-chrono-darkBg/90 border border-chrono-gold/30 text-xs text-chrono-goldLight focus:outline-none focus:border-chrono-gold">
+                        <option value="ALL">Tất cả Phân Loại</option>
+                        <option value="Cường hóa">Cường hóa</option>
+                        <option value="Khống chế">Khống chế</option>
+                        <option value="Phòng ngự">Phòng ngự</option>
+                        <option value="Hỗ trợ">Hỗ trợ</option>
+                        <option value="Tấn công">Tấn công</option>
+                        <option value="Hồi phục">Hồi phục</option>
+                        <option value="Cấm thuật">Cấm thuật</option>
+                    </select>
+
+                    <!-- Reset Button -->
+                    <button onclick="resetFilters()" class="p-2 rounded-xl border border-slate-700 bg-slate-800/60 hover:bg-slate-700 text-slate-300 transition" title="Đặt lại bộ lọc">
+                        <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            </section>
+
+            <!-- COMPARE BAR (Hiển thị khi ở chế độ so sánh) -->
+            <div id="compare-bar" class="hidden glass-panel border border-chrono-gold/50 p-4 rounded-xl flex items-center justify-between bg-chrono-gold/10 animate-fade-in">
+                <div class="flex items-center gap-3">
+                    <i data-lucide="layers" class="w-5 h-5 text-chrono-gold"></i>
+                    <span class="text-sm font-semibold text-chrono-goldLight">
+                        Chọn 2 chiêu thức để so sánh năng lực ma thuật.
+                    </span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button onclick="openCompareModal()" id="btn-execute-compare" disabled class="px-4 py-1.5 rounded-lg bg-chrono-gold text-black font-semibold text-xs disabled:opacity-50 disabled:cursor-not-allowed hover:bg-yellow-400 transition">
+                        So Sánh Ngay
+                    </button>
+                    <button onclick="toggleCompareMode()" class="px-3 py-1.5 rounded-lg bg-slate-800 text-xs text-slate-300 hover:bg-slate-700">
+                        Hủy
+                    </button>
+                </div>
+            </div>
+
+            <!-- DANH SÁCH THẺ MA THUẬT (SPELL CARD GRID) -->
+            <div id="spells-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                <!-- Spells will be dynamically rendered here -->
+            </div>
+
+            <!-- EMPTY STATE -->
+            <div id="empty-state" class="hidden glass-panel p-12 rounded-2xl text-center flex flex-col items-center justify-center gap-4">
+                <i data-lucide="compass" class="w-12 h-12 text-chrono-gold/40 animate-spin-slow"></i>
+                <h3 class="font-cinzel text-lg font-bold text-slate-300">Không tìm thấy chiêu thức ma pháp phù hợp</h3>
+                <p class="text-sm text-slate-400 max-w-md">Thử thay đổi từ khóa tìm kiếm hoặc đặt lại các bộ lọc cấp độ/phân loại.</p>
+                <button onclick="resetFilters()" class="px-4 py-2 rounded-xl bg-chrono-gold/20 border border-chrono-gold/40 text-chrono-gold text-xs font-semibold hover:bg-chrono-gold/30 transition">
+                    Đặt Lại Bộ Lọc
+                </button>
+            </div>
+
+        </main>
+
+        <!-- FOOTER -->
+        <footer class="glass-panel border-t border-chrono-gold/20 mt-12 py-6 px-4 text-center text-xs text-slate-400 font-cinzel">
+            <p class="tracking-widest uppercase text-chrono-gold/80 mb-1">Grimoire of Time — Thời Luân Vạn Tượng</p>
+            <p class="text-slate-500">Hệ Thống Ma Pháp Thời Gian Toàn Thư • Thuộc Tính Thời Gian • 25 Chiêu Thức Tối Thượng</p>
+        </footer>
+    </div>
+
+    <!-- MODAL CHI TIẾT CHIÊU THỨC (SPELL DETAIL MODAL) -->
+    <div id="detail-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md hidden flex items-center justify-center p-4">
+        <div class="glass-panel border border-chrono-gold/40 rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-[0_0_50px_rgba(223,177,91,0.2)] flex flex-col relative animate-fade-in" id="modal-content-container">
+            
+            <!-- Modal Header -->
+            <div class="p-5 border-b border-chrono-gold/20 flex items-start justify-between bg-chrono-darkBg/60 sticky top-0 z-10 backdrop-blur-md">
+                <div class="flex items-center gap-3">
+                    <span id="modal-code" class="font-cinzel font-black text-lg px-2.5 py-1 rounded-md badge-S">S-05</span>
+                    <div>
+                        <h2 id="modal-title" class="font-cinzel text-lg md:text-xl font-bold text-chrono-goldLight">TÊN CHIÊU THỨC</h2>
+                        <div class="flex items-center gap-2 mt-1">
+                            <span id="modal-type" class="text-xs px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700">Phân loại</span>
+                            <span id="modal-rank-label" class="text-xs text-chrono-gold/80 font-cinzel font-semibold">Cấp S — Tối Thượng</span>
+                        </div>
+                    </div>
+                </div>
+                <button onclick="closeDetailModal()" class="p-1.5 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-400 hover:text-white transition">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="p-6 space-y-6">
+                <!-- Description -->
+                <div>
+                    <h4 class="text-xs uppercase tracking-wider font-cinzel font-bold text-chrono-gold mb-2 flex items-center gap-1.5">
+                        <i data-lucide="book-open" class="w-4 h-4"></i> Mô Tả Chiêu Thức
+                    </h4>
+                    <p id="modal-desc" class="text-sm leading-relaxed text-slate-200 bg-slate-900/50 p-3.5 rounded-xl border border-slate-800/80">
+                        Mô tả chi tiết chiêu thức...
+                    </p>
+                </div>
+
+                <!-- Special S-05 Section (Effects & Incantation) -->
+                <div id="modal-special-s05" class="hidden space-y-4 bg-rose-950/20 p-4 rounded-xl border border-rose-500/30">
+                    <div>
+                        <h4 class="text-xs uppercase tracking-wider font-cinzel font-bold text-rose-400 mb-2 flex items-center gap-1.5">
+                            <i data-lucide="sparkles" class="w-4 h-4"></i> Ba Hiệu Ứng Chính (Cấm Thuật Tối Thượng)
+                        </h4>
+                        <ol id="modal-effects-list" class="list-decimal list-inside text-xs text-slate-300 space-y-1.5 font-sans">
+                            <!-- Effects list -->
+                        </ol>
+                    </div>
+
+                    <div class="border-t border-rose-500/20 pt-3">
+                        <h4 class="text-xs uppercase tracking-wider font-cinzel font-bold text-amber-300 mb-1 flex items-center gap-1.5">
+                            <i data-lucide="scroll" class="w-4 h-4"></i> Câu Niệm Chú
+                        </h4>
+                        <p id="modal-incantation" class="font-cinzel text-xs italic text-amber-200/90 bg-black/40 p-3 rounded-lg border border-amber-500/30 leading-relaxed text-center">
+                            "..."
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Strengths / Pros -->
+                <div>
+                    <h4 class="text-xs uppercase tracking-wider font-cinzel font-bold text-emerald-400 mb-2 flex items-center gap-1.5">
+                        <i data-lucide="shield-check" class="w-4 h-4"></i> Điểm Mạnh Nguyên Bản
+                    </h4>
+                    <ul id="modal-strengths" class="space-y-2 text-xs text-slate-300">
+                        <!-- Strengths items -->
+                    </ul>
+                </div>
+
+                <!-- Limitations / Cons -->
+                <div>
+                    <h4 class="text-xs uppercase tracking-wider font-cinzel font-bold text-rose-400 mb-2 flex items-center gap-1.5">
+                        <i data-lucide="alert-triangle" class="w-4 h-4"></i> Giới Hạn & Nhược Điểm
+                    </h4>
+                    <ul id="modal-limitations" class="space-y-2 text-xs text-slate-300">
+                        <!-- Limitations items -->
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="p-4 border-t border-chrono-gold/20 bg-chrono-darkBg/80 flex items-center justify-between gap-3">
+                <button id="modal-fav-btn" onclick="" class="px-3.5 py-2 rounded-xl border border-rose-500/40 bg-rose-950/30 hover:bg-rose-900/40 text-xs font-semibold text-rose-300 flex items-center gap-2 transition">
+                    <i data-lucide="bookmark" class="w-4 h-4"></i>
+                    <span id="modal-fav-text">Lưu Yêu Thích</span>
+                </button>
+
+                <button id="modal-cast-btn" onclick="" class="px-5 py-2 rounded-xl bg-gradient-to-r from-chrono-gold to-amber-600 text-black font-cinzel font-bold text-xs shadow-[0_0_15px_rgba(223,177,91,0.4)] hover:brightness-110 transition flex items-center gap-2">
+                    <i data-lucide="play" class="w-4 h-4 fill-black"></i>
+                    <span>Mô Phỏng Thi Thiếp</span>
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- MODAL SO SÁNH (COMPARE MODAL) -->
+    <div id="compare-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md hidden flex items-center justify-center p-4">
+        <div class="glass-panel border border-chrono-gold/50 rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto p-6 relative">
+            <div class="flex items-center justify-between pb-4 border-b border-chrono-gold/20 mb-6">
+                <h3 class="font-cinzel text-lg font-bold text-chrono-goldLight flex items-center gap-2">
+                    <i data-lucide="git-compare" class="w-5 h-5 text-chrono-gold"></i>
+                    Đối Chiếu Năng Lực Ma Pháp Thời Gian
+                </h3>
+                <button onclick="closeCompareModal()" class="p-1 rounded-lg bg-slate-800 text-slate-400 hover:text-white">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <!-- Compare Grid -->
+            <div id="compare-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Card 1 & Card 2 compared dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <!-- NOTIFICATION TOAST -->
+    <div id="toast" class="fixed bottom-6 right-6 z-50 glass-panel border border-chrono-gold/50 px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none">
+        <i id="toast-icon" data-lucide="sparkles" class="w-5 h-5 text-chrono-gold"></i>
+        <span id="toast-msg" class="text-xs font-semibold text-slate-100">Thông báo...</span>
+    </div>
+
+    <!-- DATA & LOGIC SCRIPT -->
+    <script>
+        // DATA FULL 25 CHIÊU THỨC MA PHÁP THỜI GIAN (GRIMOIRE OF TIME)
+        const SPELLS_DATA = [
+            // ================= CẤP D =================
+            {
+                id: "D-01",
+                code: "D-01",
+                name: "THỜI TỐC",
+                rank: "D",
+                rankLabel: "Cấp D — Khởi Nguyên Khoảnh Khắc",
+                type: "Cường hóa",
+                subType: "Tăng tốc bản thân",
+                desc: "Tăng tốc độ chuyển động của người sử dụng trong thời gian ngắn bằng ma pháp thời gian.",
+                strengths: [
+                    "Di chuyển và né tránh nhanh hơn.",
+                    "Thực hiện liên tiếp nhiều động tác.",
+                    "Thích hợp áp sát hoặc rút lui."
+                ],
+                limitations: [
+                    "Không tự động tăng phản xạ và suy nghĩ tương ứng.",
+                    "Vẫn chịu giới hạn thể lực.",
+                    "Duy trì lâu gây hao ma lực và mệt mỏi."
+                ]
+            },
+            {
+                id: "D-02",
+                code: "D-02",
+                name: "TRÌ HOÃN",
+                rank: "D",
+                rankLabel: "Cấp D — Khởi Nguyên Khoảnh Khắc",
+                type: "Khống chế",
+                subType: "Làm chậm mục tiêu",
+                desc: "Khiến chuyển động của một mục tiêu chậm hơn bình thường trong thời gian ngắn.",
+                strengths: [
+                    "Hạn chế đối thủ áp sát.",
+                    "Tạo cơ hội né đòn và phản công.",
+                    "Có thể tác động lên vật thể đang di chuyển."
+                ],
+                limitations: [
+                    "Phạm vi ngắn, chủ yếu tác động một mục tiêu.",
+                    "Mục tiêu mạnh có thể chống lại.",
+                    "Không khiến mục tiêu dừng hoàn toàn."
+                ]
+            },
+            {
+                id: "D-03",
+                code: "D-03",
+                name: "THỜI KÍNH",
+                rank: "D",
+                rankLabel: "Cấp D — Khởi Nguyên Khoảnh Khắc",
+                type: "Phòng ngự",
+                subType: "Lá chắn thời gian",
+                desc: "Tạo một lớp màn thời gian làm chậm vật thể khi chúng đi vào vùng bảo vệ.",
+                strengths: [
+                    "Giảm tốc độ đòn đánh đơn hướng.",
+                    "Tạo thêm thời gian phản ứng.",
+                    "Bảo vệ bản thân hoặc đồng minh gần đó."
+                ],
+                limitations: [
+                    "Không xóa bỏ sức mạnh đòn đánh.",
+                    "Khó chống đòn diện rộng hoặc nhiều hướng.",
+                    "Chỉ duy trì trong thời gian ngắn."
+                ]
+            },
+            {
+                id: "D-04",
+                code: "D-04",
+                name: "NHÃN THỜI KHẮC",
+                rank: "D",
+                rankLabel: "Cấp D — Khởi Nguyên Khoảnh Khắc",
+                type: "Hỗ trợ",
+                subType: "Ghi nhận trạng thái",
+                desc: "Đặt dấu ấn lên bản thân, vật thể hoặc vị trí để ghi nhận trạng thái tại thời điểm đó.",
+                strengths: [
+                    "Làm cơ sở cho phép phục hồi cấp cao.",
+                    "Ghi nhận vị trí và tình trạng vật thể.",
+                    "Hỗ trợ theo dõi mục tiêu."
+                ],
+                limitations: [
+                    "Chỉ lưu thông tin trong phạm vi năng lực.",
+                    "Dấu ấn có thể bị phá hoặc nhiễu loạn.",
+                    "Không tự động phục hồi mục tiêu."
+                ]
+            },
+            {
+                id: "D-05",
+                code: "D-05",
+                name: "LINH CẢM TƯƠNG LAI",
+                rank: "D",
+                rankLabel: "Cấp D — Khởi Nguyên Khoảnh Khắc",
+                type: "Hỗ trợ",
+                subType: "Dự đoán ngắn hạn",
+                desc: "Quan sát một số khả năng có thể xảy ra trong vài khoảnh khắc tiếp theo.",
+                strengths: [
+                    "Đọc hướng tấn công.",
+                    "Hỗ trợ né tránh và phản đòn.",
+                    "Phát hiện một số nguy cơ sắp xảy ra."
+                ],
+                limitations: [
+                    "Chỉ dự đoán khả năng, không phải tương lai chắc chắn.",
+                    "Hành động bất ngờ có thể khiến dự đoán sai.",
+                    "Không thể nhìn xa hàng giờ hoặc nhiều ngày."
+                ]
+            },
+
+            // ================= CẤP C =================
+            {
+                id: "C-01",
+                code: "C-01",
+                name: "THỜI ĐAO",
+                rank: "C",
+                rankLabel: "Cấp C — Điều Khiển Dòng Chảy",
+                type: "Tấn công",
+                subType: "Trảm kích thời gian",
+                desc: "Tạo lưỡi đao ma lực gây sát thương và làm chậm tạm thời vùng bị trúng đòn.",
+                strengths: [
+                    "Tấn công nhanh ở cự ly gần hoặc trung bình.",
+                    "Làm chậm mục tiêu trúng đòn.",
+                    "Thích hợp nối chuỗi tấn công."
+                ],
+                limitations: [
+                    "Không thể xóa mục tiêu khỏi dòng thời gian.",
+                    "Đối thủ có phòng ngự mạnh có thể giảm hiệu ứng.",
+                    "Mỗi lần chém đều tiêu hao ma lực."
+                ]
+            },
+            {
+                id: "C-02",
+                code: "C-02",
+                name: "THỜI VỰC",
+                rank: "C",
+                rankLabel: "Cấp C — Điều Khiển Dòng Chảy",
+                type: "Khống chế",
+                subType: "Vùng thời gian chậm diện rộng",
+                desc: "Tạo khu vực khiến chuyển động bên trong chậm hơn bên ngoài.",
+                strengths: [
+                    "Kiểm soát khu vực chiến đấu.",
+                    "Hạn chế nhiều đối thủ.",
+                    "Hỗ trợ đồng minh rút lui hoặc chuẩn bị phép."
+                ],
+                limitations: [
+                    "Phạm vi càng lớn càng tốn ma lực.",
+                    "Mục tiêu mạnh có thể kháng hiệu ứng.",
+                    "Cần tập trung để duy trì vùng."
+                ]
+            },
+            {
+                id: "C-03",
+                code: "C-03",
+                name: "HỒI KHẮC",
+                rank: "C",
+                rankLabel: "Cấp C — Điều Khiển Dòng Chảy",
+                type: "Hồi phục",
+                subType: "Đảo ngược trạng thái cơ thể",
+                desc: "Đưa một vùng cơ thể về trạng thái trước đó đã được ghi nhận, giúp phục hồi một số tổn thương trong thế giới giả tưởng.",
+                strengths: [
+                    "Phục hồi vết thương mới xuất hiện.",
+                    "Hỗ trợ bản thân trong chiến đấu.",
+                    "Không cần tái tạo mô từ đầu nếu dữ liệu cũ còn nguyên."
+                ],
+                limitations: [
+                    "Hiệu quả tốt nhất với tổn thương mới.",
+                    "Thương tổn nghiêm trọng tiêu hao nhiều ma lực.",
+                    "Không bảo đảm cứu sống người nguy kịch.",
+                    "Không hồi sinh người chết hoặc khôi phục ký ức."
+                ]
+            },
+            {
+                id: "C-04",
+                code: "C-04",
+                name: "TÀN ẢNH QUÁ KHỨ",
+                rank: "C",
+                rankLabel: "Cấp C — Điều Khiển Dòng Chảy",
+                type: "Phòng ngự",
+                subType: "Đánh lạc hướng",
+                desc: "Tái hiện hình ảnh của bản thân tại vị trí vừa đứng trong khi người thật đã di chuyển.",
+                strengths: [
+                    "Khiến đối thủ nhầm lẫn vị trí.",
+                    "Tạo cơ hội né tránh và phản công.",
+                    "Kết hợp tốt với Thời Tốc."
+                ],
+                limitations: [
+                    "Tàn ảnh không có cơ thể vật chất.",
+                    "Không gây sát thương trực tiếp.",
+                    "Có thể bị phát hiện bằng cảm nhận ma lực."
+                ]
+            },
+            {
+                id: "C-05",
+                code: "C-05",
+                name: "THỜI CHẤN",
+                rank: "C",
+                rankLabel: "Cấp C — Điều Khiển Dòng Chảy",
+                type: "Tấn công",
+                subType: "Xung kích thời gian diện rộng",
+                desc: "Phóng vòng xung kích ma pháp gây chấn động và gián đoạn chuyển động của mục tiêu.",
+                strengths: [
+                    "Tấn công nhiều mục tiêu gần nhau.",
+                    "Phá vỡ nhịp tấn công của đối thủ.",
+                    "Có thể đẩy lùi mục tiêu yếu hơn."
+                ],
+                limitations: [
+                    "Hiệu quả giảm theo khoảng cách.",
+                    "Không xuyên thủng mọi kết giới.",
+                    "Khó phân biệt mục tiêu khi đồng minh đứng quá gần."
+                ]
+            },
+
+            // ================= CẤP B =================
+            {
+                id: "B-01",
+                code: "B-01",
+                name: "THỜI LAO",
+                rank: "B",
+                rankLabel: "Cấp B — Bá Chủ Thời Khắc",
+                type: "Tấn công",
+                subType: "Lao kích gia tốc",
+                desc: "Tăng tốc chuyển động trong một quãng ngắn rồi tung đòn đánh được cường hóa bằng ma lực thời gian.",
+                strengths: [
+                    "Tạo đòn tấn công bất ngờ.",
+                    "Khó đối phó khi kết hợp Thời Tốc.",
+                    "Nhanh chóng tiếp cận mục tiêu."
+                ],
+                limitations: [
+                    "Cần xác định hướng lao.",
+                    "Khó đổi hướng đột ngột.",
+                    "Không bỏ qua lớp giáp hoặc kết giới."
+                ]
+            },
+            {
+                id: "B-02",
+                code: "B-02",
+                name: "ĐÓNG BĂNG KHOẢNH KHẮC",
+                rank: "B",
+                rankLabel: "Cấp B — Bá Chủ Thời Khắc",
+                type: "Khống chế",
+                subType: "Khóa chuyển động cục bộ",
+                desc: "Khóa chuyển động của một mục tiêu hoặc vật thể trong khoảnh khắc cực ngắn.",
+                strengths: [
+                    "Ngắt một động tác đang diễn ra.",
+                    "Tạo cơ hội cứu đồng minh hoặc né đòn.",
+                    "Có thể khóa vật thể đang rơi hoặc đang bay."
+                ],
+                limitations: [
+                    "Chỉ duy trì trong thời gian rất ngắn.",
+                    "Mục tiêu mạnh có thể phá khóa.",
+                    "Khó tác động lên khu vực rộng lớn."
+                ]
+            },
+            {
+                id: "B-03",
+                code: "B-03",
+                name: "TUẾ NGUYỆT LÃO HÓA",
+                rank: "B",
+                rankLabel: "Cấp B — Bá Chủ Thời Khắc",
+                type: "Khống chế",
+                subType: "Gia tốc tuổi sinh học giả tưởng",
+                desc: "Khiến mục tiêu tạm thời mang trạng thái tuổi sinh học cao hơn theo quy tắc ma pháp.",
+                strengths: [
+                    "Gây áp chế lên đối thủ.",
+                    "Có thể làm giảm khả năng vận động tùy hiệu ứng.",
+                    "Buộc đối thủ dùng ma lực để chống đỡ."
+                ],
+                limitations: [
+                    "Mục tiêu mạnh có thể chống lại.",
+                    "Thay đổi tuổi quá lớn tiêu hao nhiều ma lực.",
+                    "Không thể khiến mục tiêu già đi vô hạn.",
+                    "Có thể bị giải trừ bằng phép phù hợp."
+                ]
+            },
+            {
+                id: "B-04",
+                code: "B-04",
+                name: "PHẢN CHIẾU THỜI GIAN",
+                rank: "B",
+                rankLabel: "Cấp B — Bá Chủ Thời Khắc",
+                type: "Phòng ngự",
+                subType: "Phản đòn",
+                desc: "Tạo màn thời gian ghi nhận đường đi của đòn đánh rồi làm lệch một phần lực tấn công trở lại hướng xuất phát.",
+                strengths: [
+                    "Phản đòn những đòn đơn hướng.",
+                    "Tạo cơ hội phản công.",
+                    "Kết hợp với Thời Kính để tăng phòng thủ."
+                ],
+                limitations: [
+                    "Không phản lại toàn bộ sát thương.",
+                    "Khó chống đòn diện rộng hoặc nhiều hướng.",
+                    "Cần kích hoạt đúng thời điểm."
+                ]
+            },
+            {
+                id: "B-05",
+                code: "B-05",
+                name: "TRẺ HÓA THỜI KHẮC",
+                rank: "B",
+                rankLabel: "Cấp B — Bá Chủ Thời Khắc",
+                type: "Hỗ trợ",
+                subType: "Đảo ngược tuổi sinh học giả tưởng",
+                desc: "Đưa trạng thái tuổi sinh học của bản thân hoặc mục tiêu về một giai đoạn trẻ hơn.",
+                strengths: [
+                    "Khôi phục trạng thái cơ thể trẻ hơn trong giới hạn phép.",
+                    "Có thể tái lập trạng thái chiến đấu đã ghi nhận.",
+                    "Có thể dùng lên đồng minh khi kiểm soát chính xác."
+                ],
+                limitations: [
+                    "Không khôi phục ký ức hoặc kinh nghiệm đã mất.",
+                    "Không thể trẻ hóa vô hạn.",
+                    "Cần xác định trạng thái tuổi muốn phục hồi.",
+                    "Mục tiêu có sức kháng cao sẽ khó bị tác động."
+                ]
+            },
+
+            // ================= CẤP A =================
+            {
+                id: "A-01",
+                code: "A-01",
+                name: "HỒI QUY VẠN VẬT",
+                rank: "A",
+                rankLabel: "Cấp A — Chủ Nhân Tuế Nguyệt",
+                type: "Hồi phục",
+                subType: "Tái lập trạng thái vật thể",
+                desc: "Đưa vật thể không sống về trạng thái đã được ghi nhận trước đó.",
+                strengths: [
+                    "Phục hồi vật thể hư hỏng.",
+                    "Sửa chữa kết cấu ma pháp.",
+                    "Khôi phục vật dụng quan trọng."
+                ],
+                limitations: [
+                    "Cần dữ liệu trạng thái cũ.",
+                    "Vật thể phức tạp tiêu hao nhiều ma lực.",
+                    "Không tự động phục hồi năng lượng đã mất."
+                ]
+            },
+            {
+                id: "A-02",
+                code: "A-02",
+                name: "THIÊN TUẾ TRỌNG ÁP",
+                rank: "A",
+                rankLabel: "Cấp A — Chủ Nhân Tuế Nguyệt",
+                type: "Tấn công",
+                subType: "Áp chế thời gian",
+                desc: "Tạo vùng áp chế khiến chuyển động của mục tiêu chậm dần trong khi người dùng hoạt động theo nhịp riêng đã thiết lập.",
+                strengths: [
+                    "Hạn chế nhiều đối thủ.",
+                    "Giúp người dùng chủ động chọn vị trí.",
+                    "Có thể làm chậm đòn đánh đang tiến đến."
+                ],
+                limitations: [
+                    "Không khiến người dùng nhanh vô hạn.",
+                    "Vùng càng rộng càng khó duy trì.",
+                    "Mục tiêu kháng thời gian cao có thể thoát."
+                ]
+            },
+            {
+                id: "A-03",
+                code: "A-03",
+                name: "THÂN THỂ NGHỊCH TUẾ",
+                rank: "A",
+                rankLabel: "Cấp A — Chủ Nhân Tuế Nguyệt",
+                type: "Cường hóa",
+                subType: "Tái lập tuổi sinh học bản thân",
+                desc: "Đưa cơ thể người dùng về trạng thái tuổi sinh học đã được ghi nhận.",
+                strengths: [
+                    "Điều chỉnh trạng thái cơ thể theo chiến thuật.",
+                    "Có thể phục hồi một số tổn thương nếu trạng thái cũ còn nguyên.",
+                    "Kết hợp tốt với Thời Tốc."
+                ],
+                limitations: [
+                    "Không khôi phục ma lực đã mất.",
+                    "Không thay thế kỹ năng hoặc kinh nghiệm.",
+                    "Trạng thái càng khác biệt càng tốn ma lực.",
+                    "Không duy trì nhiều trạng thái cùng lúc."
+                ]
+            },
+            {
+                id: "A-04",
+                code: "A-04",
+                name: "THIÊN MỆNH TIÊN TRI",
+                rank: "A",
+                rankLabel: "Cấp A — Chủ Nhân Tuế Nguyệt",
+                type: "Hỗ trợ",
+                subType: "Quan sát khả năng tương lai",
+                desc: "Quan sát một số nhánh tương lai có thể xảy ra trong khoảng thời gian ngắn.",
+                strengths: [
+                    "Dự đoán nhiều hướng tấn công.",
+                    "Hỗ trợ lựa chọn chiến thuật.",
+                    "Nhận ra một số nguy cơ sắp xảy ra."
+                ],
+                limitations: [
+                    "Không nhìn thấy tương lai chắc chắn.",
+                    "Lựa chọn bất ngờ có thể làm thay đổi kết quả.",
+                    "Quan sát nhiều nhánh gây hao ma lực và quá tải tinh thần."
+                ]
+            },
+            {
+                id: "A-05",
+                code: "A-05",
+                name: "VÒNG LUÂN HỒI",
+                rank: "A",
+                rankLabel: "Cấp A — Chủ Nhân Tuế Nguyệt",
+                type: "Phòng ngự",
+                subType: "Tái lập vị trí",
+                desc: "Ghi nhận vị trí và trạng thái cơ bản của người dùng, cho phép trở về mốc đó khi kích hoạt.",
+                strengths: [
+                    "Thoát khỏi vị trí bất lợi.",
+                    "Có thể phục hồi một phần trạng thái đã ghi nhận.",
+                    "Tạo phương án dự phòng."
+                ],
+                limitations: [
+                    "Chỉ trở về mốc đã ghi nhận.",
+                    "Không hoàn nguyên mọi thứ trong môi trường.",
+                    "Không tự động khôi phục ma lực.",
+                    "Dấu ấn bị phá sẽ khiến phép thất bại."
+                ]
+            },
+
+            // ================= CẤP S =================
+            {
+                id: "S-01",
+                code: "S-01",
+                name: "NGHỊCH LƯU VẠN NIÊN",
+                rank: "S",
+                rankLabel: "Cấp S — Tối Thượng Thời Luân",
+                type: "Hồi phục",
+                subType: "Hồi phục tối thượng / Đảo ngược trạng thái",
+                desc: "Đưa cơ thể về trạng thái đã ghi nhận trước đó, phục hồi một số thương tổn xuất hiện sau thời điểm ấy.",
+                strengths: [
+                    "Phục hồi nhiều thương tổn cùng lúc.",
+                    "Đưa cơ thể về trạng thái khỏe mạnh hơn trước khi bị thương.",
+                    "Hữu ích để cứu đồng minh trong chiến đấu.",
+                    "Kết hợp với Nhãn Thời Khắc để tăng độ chính xác."
+                ],
+                limitations: [
+                    "Không hồi sinh người đã chết.",
+                    "Cần dữ liệu trạng thái phù hợp.",
+                    "Tổn thương nghiêm trọng tiêu hao nhiều ma lực.",
+                    "Không tự động khôi phục ma lực hoặc ký ức.",
+                    "Mục tiêu mạnh có thể chống lại."
+                ]
+            },
+            {
+                id: "S-02",
+                code: "S-02",
+                name: "TUẾ NGUYỆT TÀN DIỆT",
+                rank: "S",
+                rankLabel: "Cấp S — Tối Thượng Thời Luân",
+                type: "Tấn công",
+                subType: "Tấn công tối thượng / Gia tốc tuổi",
+                desc: "Tác động lên trạng thái tuổi sinh học của mục tiêu, khiến mục tiêu chuyển nhanh sang trạng thái cao tuổi hơn trong giới hạn phép.",
+                strengths: [
+                    "Gây áp chế mạnh.",
+                    "Có thể làm giảm khả năng vận động tùy hiệu ứng.",
+                    "Buộc đối thủ phải chống đỡ hoặc giải trừ.",
+                    "Kết hợp với Thời Vực để hạn chế khả năng thoát."
+                ],
+                limitations: [
+                    "Cần khóa mục tiêu.",
+                    "Đối thủ kháng thời gian cao có thể giảm hiệu ứng.",
+                    "Không thể khiến mục tiêu già đi vô hạn.",
+                    "Phạm vi xa hoặc hiệu ứng mạnh làm tăng chi phí ma lực."
+                ]
+            },
+            {
+                id: "S-03",
+                code: "S-03",
+                name: "THIÊN NIÊN PHẢN SINH",
+                rank: "S",
+                rankLabel: "Cấp S — Tối Thượng Thời Luân",
+                type: "Hỗ trợ",
+                subType: "Hỗ trợ tối thượng / Trẻ hóa",
+                desc: "Tái lập trạng thái tuổi sinh học của bản thân hoặc mục tiêu về giai đoạn trẻ hơn đã được ghi nhận.",
+                strengths: [
+                    "Khôi phục trạng thái cơ thể trẻ hơn.",
+                    "Tái lập trạng thái thể chất phù hợp với chiến đấu.",
+                    "Kết hợp với Nghịch Lưu Vạn Niên.",
+                    "Cho phép chuyển đổi giữa các trạng thái tuổi đã thiết lập."
+                ],
+                limitations: [
+                    "Không khôi phục kinh nghiệm hoặc ký ức đã mất.",
+                    "Không tạo ra tuổi thọ vô hạn.",
+                    "Thay đổi tuổi lớn tiêu hao nhiều ma lực.",
+                    "Không duy trì nhiều trạng thái tuổi cùng lúc.",
+                    "Dấu ấn bị hủy có thể khiến phép thất bại."
+                ]
+            },
+            {
+                id: "S-04",
+                code: "S-04",
+                name: "VĨNH HẰNG THỜI KHẮC",
+                rank: "S",
+                rankLabel: "Cấp S — Tối Thượng Thời Luân",
+                type: "Phòng ngự",
+                subType: "Phòng ngự tối thượng / Kết giới thời gian",
+                desc: "Tạo kết giới điều chỉnh nhịp thời gian, làm chậm đòn đánh và giữ một số cấu trúc ma pháp ổn định.",
+                strengths: [
+                    "Phòng thủ trước nhiều đòn liên tiếp.",
+                    "Tạo cơ hội sơ tán đồng minh.",
+                    "Giữ cổng hoặc kết giới ổn định.",
+                    "Kiểm soát nhịp độ chiến trường."
+                ],
+                limitations: [
+                    "Không phải kết giới bất khả xâm phạm.",
+                    "Không dừng thời gian toàn vũ trụ.",
+                    "Nhiều mục tiêu mạnh có thể làm kết giới quá tải.",
+                    "Tiêu hao ma lực liên tục."
+                ]
+            },
+            {
+                id: "S-05",
+                code: "S-05",
+                name: "CHUNG CỰC: THỜI LUÂN QUY NGUYÊN",
+                rank: "S",
+                rankLabel: "Cấp S — Tối Thượng Thời Luân",
+                type: "Cấm thuật",
+                subType: "Cấm thuật tối thượng / Tái cấu trúc thời gian cục bộ",
+                desc: "Tạo vòng thời gian ma pháp trong khu vực đã đánh dấu, kết hợp gia tốc, trì hoãn, tái lập trạng thái và khóa thời khắc.",
+                specialEffects: [
+                    "Hồi quy trạng thái: Đưa vật thể hoặc trạng thái cơ thể đã ghi nhận về mốc trước đó.",
+                    "Điều phối thời khắc: Làm chậm hoặc đưa vùng thời gian về nhịp bình thường.",
+                    "Định lại dòng chảy: Thiết lập lại nhịp hoạt động của các hiệu ứng thời gian trong kết giới."
+                ],
+                incantation: "Quá khứ lưu dấu — hiện tại chuyển mình!\nTuế nguyệt đảo chiều — vạn khắc quy nguyên!\nTHỜI LUÂN QUY NGUYÊN!",
+                strengths: [
+                    "Kết hợp tấn công, phòng ngự và hỗ trợ.",
+                    "Tái lập một số trạng thái đã ghi nhận.",
+                    "Cứu đồng minh nếu còn đủ điều kiện.",
+                    "Thay đổi nhịp độ chiến đấu trong khu vực.",
+                    "Có thể vô hiệu hóa một số phép thời gian cấp thấp hơn."
+                ],
+                limitations: [
+                    "Chỉ tác động trong khu vực hữu hạn đã thiết lập.",
+                    "Cần điểm neo và dữ liệu trạng thái.",
+                    "Không thể viết lại toàn bộ lịch sử hoặc hồi sinh người chết.",
+                    "Tiêu hao ma lực cực lớn.",
+                    "Mất tập trung hoặc mất điểm neo trung tâm có thể khiến kết giới sụp đổ.",
+                    "Sau khi sử dụng, Grimoire có thể ngủ đông và khóa phép cấp cao để hồi phục."
+                ]
+            }
+        ];
+
+        // APP STATE
+        let favorites = JSON.parse(localStorage.getItem('chrono_favs') || '[]');
+        let compareList = [];
+        let isCompareMode = false;
+        let isFavOnlyMode = false;
+
+        // INITIALIZATION
+        window.addEventListener('DOMContentLoaded', () => {
+            initLucide();
+            renderSpells();
+            updateStatsUI();
+            initChronoBackgroundCanvas();
+        });
+
+        function initLucide() {
+            if (window.lucide) {
+                lucide.createIcons();
+            }
+        }
+
+        // RENDER SPELL CARDS GRID
+        function renderSpells() {
+            const grid = document.getElementById('spells-grid');
+            const emptyState = document.getElementById('empty-state');
+
+            const searchKey = document.getElementById('search-input').value.toLowerCase().trim();
+            const selectedRank = document.getElementById('rank-select').value;
+            const selectedType = document.getElementById('type-select').value;
+
+            const filtered = SPELLS_DATA.filter(spell => {
+                // Filter Rank
+                if (selectedRank !== 'ALL' && spell.rank !== selectedRank) return false;
+                // Filter Type
+                if (selectedType !== 'ALL' && spell.type !== selectedType) return false;
+                // Filter Favs
+                if (isFavOnlyMode && !favorites.includes(spell.id)) return false;
+                // Search Text
+                if (searchKey) {
+                    const matchName = spell.name.toLowerCase().includes(searchKey);
+                    const matchCode = spell.code.toLowerCase().includes(searchKey);
+                    const matchDesc = spell.desc.toLowerCase().includes(searchKey);
+                    const matchType = spell.type.toLowerCase().includes(searchKey);
+                    return matchName || matchCode || matchDesc || matchType;
+                }
+                return true;
+            });
+
+            if (filtered.length === 0) {
+                grid.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                return;
+            } else {
+                emptyState.classList.add('hidden');
+            }
+
+            grid.innerHTML = filtered.map(spell => {
+                const isFav = favorites.includes(spell.id);
+                const isCompared = compareList.includes(spell.id);
+
+                return `
+                    <div id="spell-card-${spell.id}" class="glass-card rounded-2xl p-5 flex flex-col justify-between relative overflow-hidden rank-${spell.rank} group cursor-pointer" onclick="openDetailModal('${spell.id}')">
+                        
+                        <!-- Top Header -->
+                        <div>
+                            <div class="flex items-center justify-between gap-2 mb-3">
+                                <div class="flex items-center gap-2">
+                                    <span class="font-cinzel font-black text-xs px-2.5 py-1 rounded badge-${spell.rank}">${spell.code}</span>
+                                    <span class="text-xs font-semibold px-2 py-0.5 rounded bg-slate-800/80 text-slate-300 border border-slate-700/60">${spell.type}</span>
+                                </div>
+                                
+                                <div class="flex items-center gap-1" onclick="event.stopPropagation()">
+                                    ${isCompareMode ? `
+                                        <button onclick="toggleCompareItem('${spell.id}')" class="p-1.5 rounded-lg border ${isCompared ? 'bg-chrono-gold text-black border-chrono-gold' : 'bg-slate-800/80 text-slate-400 border-slate-700'} hover:scale-105 transition" title="So sánh">
+                                            <i data-lucide="${isCompared ? 'check-square' : 'square'}" class="w-4 h-4"></i>
+                                        </button>
+                                    ` : ''}
+
+                                    <button onclick="toggleFavorite('${spell.id}')" class="p-1.5 rounded-lg border border-slate-700/60 bg-slate-800/80 hover:bg-slate-700 ${isFav ? 'text-rose-400 border-rose-500/40' : 'text-slate-400'} transition" title="Lưu chiêu thức">
+                                        <i data-lucide="bookmark" class="w-4 h-4 ${isFav ? 'fill-rose-400' : ''}"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <h3 class="font-cinzel text-base font-bold text-slate-100 group-hover:text-chrono-goldLight transition flex items-center gap-1.5 mb-2">
+                                ${spell.name}
+                            </h3>
+
+                            <p class="text-xs text-slate-300/90 leading-relaxed line-clamp-3 mb-4">
+                                ${spell.desc}
+                            </p>
+                        </div>
+
+                        <!-- Card Footer -->
+                        <div class="pt-3 border-t border-slate-700/40 flex items-center justify-between text-xs text-slate-400">
+                            <span class="font-cinzel text-[11px] text-chrono-gold/70">${spell.rankLabel.split('—')[1] || spell.rankLabel}</span>
+                            <span class="text-chrono-gold font-semibold flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+                                Chi tiết <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
+                            </span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            initLucide();
+        }
+
+        // HANDLE SEARCH & FILTERS
+        function handleSearch() {
+            renderSpells();
+        }
+
+        function applyFilters() {
+            renderSpells();
+        }
+
+        function filterByRank(rank) {
+            document.getElementById('rank-select').value = rank;
+            applyFilters();
+        }
+
+        function resetFilters() {
+            document.getElementById('search-input').value = '';
+            document.getElementById('rank-select').value = 'ALL';
+            document.getElementById('type-select').value = 'ALL';
+            isFavOnlyMode = false;
+            updateFavUI();
+            renderSpells();
+            showToast('Đã đặt lại toàn bộ bộ lọc ma pháp', 'rotate-ccw');
+        }
+
+        // FAVORITES SYSTEM
+        function toggleFavorite(id) {
+            if (favorites.includes(id)) {
+                favorites = favorites.filter(favId => favId !== id);
+                showToast('Đã xóa khỏi danh sách yêu thích', 'bookmark-minus');
+            } else {
+                favorites.push(id);
+                showToast('Đã lưu vào Grimoire yêu thích!', 'bookmark-check');
+            }
+            localStorage.setItem('chrono_favs', JSON.stringify(favorites));
+            updateFavUI();
+            renderSpells();
+
+            // Sync with open modal if needed
+            const modal = document.getElementById('detail-modal');
+            if (!modal.classList.contains('hidden')) {
+                updateModalFavBtn(id);
+            }
+        }
+
+        function toggleFavoritesOnly() {
+            isFavOnlyMode = !isFavOnlyMode;
+            updateFavUI();
+            renderSpells();
+        }
+
+        function updateFavUI() {
+            document.getElementById('fav-count').innerText = favorites.length;
+            const btn = document.getElementById('fav-toggle-btn');
+            if (isFavOnlyMode) {
+                btn.classList.add('bg-rose-500/30', 'border-rose-400');
+            } else {
+                btn.classList.remove('bg-rose-500/30', 'border-rose-400');
+            }
+        }
+
+        // COMPARE MODE SYSTEM
+        function toggleCompareMode() {
+            isCompareMode = !isCompareMode;
+            const bar = document.getElementById('compare-bar');
+            const btn = document.getElementById('compare-toggle-btn');
+
+            if (isCompareMode) {
+                bar.classList.remove('hidden');
+                btn.classList.add('bg-chrono-gold/30', 'border-chrono-gold');
+            } else {
+                bar.classList.add('hidden');
+                btn.classList.remove('bg-chrono-gold/30', 'border-chrono-gold');
+                compareList = [];
+            }
+            updateCompareUI();
+            renderSpells();
+        }
+
+        function toggleCompareItem(id) {
+            if (compareList.includes(id)) {
+                compareList = compareList.filter(item => item !== id);
+            } else {
+                if (compareList.length >= 2) {
+                    showToast('Chỉ có thể so sánh tối đa 2 chiêu thức!', 'alert-circle');
+                    return;
+                }
+                compareList.push(id);
+            }
+            updateCompareUI();
+            renderSpells();
+        }
+
+        function updateCompareUI() {
+            document.getElementById('compare-count').innerText = compareList.length;
+            const executeBtn = document.getElementById('btn-execute-compare');
+            executeBtn.disabled = compareList.length !== 2;
+        }
+
+        function openCompareModal() {
+            if (compareList.length !== 2) return;
+            const spell1 = SPELLS_DATA.find(s => s.id === compareList[0]);
+            const spell2 = SPELLS_DATA.find(s => s.id === compareList[1]);
+
+            const grid = document.getElementById('compare-grid');
+            grid.innerHTML = [spell1, spell2].map(s => `
+                <div class="glass-card p-5 rounded-2xl rank-${s.rank} space-y-4">
+                    <div class="flex items-center justify-between border-b border-slate-700/60 pb-3">
+                        <div>
+                            <span class="font-cinzel text-xs font-bold px-2 py-0.5 rounded badge-${s.rank}">${s.code}</span>
+                            <h4 class="font-cinzel text-lg font-bold text-chrono-goldLight mt-1">${s.name}</h4>
+                        </div>
+                        <span class="text-xs px-2 py-1 bg-slate-800 rounded border border-slate-700 text-slate-300">${s.type}</span>
+                    </div>
+
+                    <div>
+                        <span class="text-[11px] font-cinzel text-chrono-gold uppercase tracking-wider block mb-1">Mô tả</span>
+                        <p class="text-xs text-slate-300 bg-slate-900/60 p-2.5 rounded-lg border border-slate-800">${s.desc}</p>
+                    </div>
+
+                    <div>
+                        <span class="text-[11px] font-cinzel text-emerald-400 uppercase tracking-wider block mb-1">Điểm Mạnh</span>
+                        <ul class="text-xs text-slate-300 space-y-1 list-disc list-inside">
+                            ${s.strengths.map(st => `<li>${st}</li>`).join('')}
+                        </ul>
+                    </div>
+
+                    <div>
+                        <span class="text-[11px] font-cinzel text-rose-400 uppercase tracking-wider block mb-1">Giới Hạn</span>
+                        <ul class="text-xs text-slate-300 space-y-1 list-disc list-inside">
+                            ${s.limitations.map(lm => `<li>${lm}</li>`).join('')}
+                        </ul>
+                    </div>
+                </div>
+            `).join('');
+
+            document.getElementById('compare-modal').classList.remove('hidden');
+            initLucide();
+        }
+
+        function closeCompareModal() {
+            document.getElementById('compare-modal').classList.add('hidden');
+        }
+
+        // SPELL DETAIL MODAL
+        function openDetailModal(id) {
+            const spell = SPELLS_DATA.find(s => s.id === id);
+            if (!spell) return;
+
+            document.getElementById('modal-code').innerText = spell.code;
+            document.getElementById('modal-code').className = `font-cinzel font-black text-lg px-2.5 py-1 rounded-md badge-${spell.rank}`;
+            document.getElementById('modal-title').innerText = spell.name;
+            document.getElementById('modal-type').innerText = spell.type + (spell.subType ? ` • ${spell.subType}` : '');
+            document.getElementById('modal-rank-label').innerText = spell.rankLabel;
+            document.getElementById('modal-desc').innerText = spell.desc;
+
+            // Special S-05 Section Handling
+            const specialSection = document.getElementById('modal-special-s05');
+            if (spell.id === 'S-05' && spell.specialEffects) {
+                specialSection.classList.remove('hidden');
+                document.getElementById('modal-effects-list').innerHTML = spell.specialEffects.map(eff => `<li class="leading-relaxed"><strong class="text-rose-300">${eff.split(':')[0]}:</strong>${eff.split(':')[1]}</li>`).join('');
+                document.getElementById('modal-incantation').innerText = spell.incantation;
+            } else {
+                specialSection.classList.add('hidden');
+            }
+
+            // Strengths
+            document.getElementById('modal-strengths').innerHTML = spell.strengths.map(st => `
+                <li class="flex items-start gap-2 bg-emerald-950/20 p-2 rounded-lg border border-emerald-500/20">
+                    <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-400 shrink-0 mt-0.5"></i>
+                    <span>${st}</span>
+                </li>
+            `).join('');
+
+            // Limitations
+            document.getElementById('modal-limitations').innerHTML = spell.limitations.map(lm => `
+                <li class="flex items-start gap-2 bg-rose-950/20 p-2 rounded-lg border border-rose-500/20">
+                    <i data-lucide="alert-octagon" class="w-4 h-4 text-rose-400 shrink-0 mt-0.5"></i>
+                    <span>${lm}</span>
+                </li>
+            `).join('');
+
+            // Update Action Buttons
+            updateModalFavBtn(id);
+            const castBtn = document.getElementById('modal-cast-btn');
+            castBtn.onclick = () => simulateSpellCast(spell.id);
+
+            document.getElementById('detail-modal').classList.remove('hidden');
+            initLucide();
+        }
+
+        function updateModalFavBtn(id) {
+            const isFav = favorites.includes(id);
+            const btn = document.getElementById('modal-fav-btn');
+            const text = document.getElementById('modal-fav-text');
+            btn.onclick = () => toggleFavorite(id);
+            text.innerText = isFav ? 'Đã Lưu (Yêu Thích)' : 'Lưu Yêu Thích';
+            if (isFav) {
+                btn.classList.add('bg-rose-500/40', 'border-rose-400', 'text-rose-200');
+            } else {
+                btn.classList.remove('bg-rose-500/40', 'border-rose-400', 'text-rose-200');
+            }
+        }
+
+        function closeDetailModal() {
+            document.getElementById('detail-modal').classList.add('hidden');
+        }
+
+        // SIMULATE SPELL CASTING (MÔ PHỎNG THI THIẾP)
+        function simulateSpellCast(id) {
+            const spell = SPELLS_DATA.find(s => s.id === id);
+            if (!spell) return;
+
+            const container = document.getElementById('modal-content-container');
+            container.classList.add('spell-activating');
+            setTimeout(() => container.classList.remove('spell-activating'), 600);
+
+            // Trigger Time Canvas Surge
+            triggerCanvasBurst();
+
+            showToast(`Đang mô phỏng ma pháp [${spell.code} — ${spell.name}]!`, 'sparkles');
+        }
+
+        function triggerGlobalTimeDilation() {
+            triggerCanvasBurst();
+            showToast('Kích hoạt thành công [Thời Vực] toàn chiến trường!', 'zap');
+        }
+
+        function updateStatsUI() {
+            document.getElementById('fav-count').innerText = favorites.length;
+        }
+
+        // TOAST NOTIFICATION SYSTEM
+        let toastTimer;
+        function showToast(msg, iconName = 'sparkles') {
+            const toast = document.getElementById('toast');
+            const msgEl = document.getElementById('toast-msg');
+            const iconEl = document.getElementById('toast-icon');
+
+            msgEl.innerText = msg;
+            iconEl.setAttribute('data-lucide', iconName);
+            initLucide();
+
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+                toast.classList.remove('translate-y-0', 'opacity-100');
+            }, 3000);
+        }
+
+        // CANVAS BACKGROUND ANIMATION — MA TRẬN BÁNH RĂNG THỜI GIAN
+        let canvas, ctx;
+        let rotationAngle = 0;
+        let speedMultiplier = 1;
+
+        function initChronoBackgroundCanvas() {
+            canvas = document.getElementById('chrono-canvas');
+            ctx = canvas.getContext('2d');
+
+            function resize() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+            window.addEventListener('resize', resize);
+            resize();
+
+            animateCanvas();
+        }
+
+        function triggerCanvasBurst() {
+            speedMultiplier = 8;
+            setTimeout(() => {
+                speedMultiplier = 1;
+            }, 1200);
+        }
+
+        function animateCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+            const baseRadius = Math.min(canvas.width, canvas.height) * 0.35;
+
+            rotationAngle += 0.002 * speedMultiplier;
+
+            ctx.save();
+            ctx.translate(cx, cy);
+
+            // Outer Magic Circle
+            ctx.strokeStyle = 'rgba(223, 177, 91, 0.25)';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(0, 0, baseRadius, 0, Math.PI * 2);
+            ctx.stroke();
+
+            // Inner Dashed Gear Ring
+            ctx.save();
+            ctx.rotate(rotationAngle);
+            ctx.setLineDash([10, 15]);
+            ctx.strokeStyle = 'rgba(56, 189, 248, 0.3)';
+            ctx.beginPath();
+            ctx.arc(0, 0, baseRadius * 0.8, 0, Math.PI * 2);
+            ctx.stroke();
+            ctx.restore();
+
+            // Reverse Inner Clockwork
+            ctx.save();
+            ctx.rotate(-rotationAngle * 1.5);
+            ctx.strokeStyle = 'rgba(223, 177, 91, 0.2)';
+            ctx.lineWidth = 1;
+            
+            // Draw Clock Hour Marks
+            for (let i = 0; i < 12; i++) {
+                const angle = (i * Math.PI) / 6;
+                const x1 = Math.cos(angle) * (baseRadius * 0.7);
+                const y1 = Math.sin(angle) * (baseRadius * 0.7);
+                const x2 = Math.cos(angle) * (baseRadius * 0.78);
+                const y2 = Math.sin(angle) * (baseRadius * 0.78);
+                ctx.beginPath();
+                ctx.moveTo(x1, y1);
+                ctx.lineTo(x2, y2);
+                ctx.stroke();
+            }
+            ctx.restore();
+
+            ctx.restore();
+
+            requestAnimationFrame(animateCanvas);
+        }
+    </script>
+</body>
+</html>
